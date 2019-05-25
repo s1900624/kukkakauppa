@@ -1,74 +1,53 @@
 <?php
-require_once 'db.php';
-
-$mysqli = new mysqli($host, $username, $password, $database);
-
-$query = "SELECT * FROM `kukat`;";
-if ($result = $mysqli->query($query)) {
-    $div = '<div class="flowers-container">';
-    while ($row = $result->fetch_row()) {
-        $div .= "<div class='flowers'>";
-        $div .= "<div class='flower'>";
-        $div .= "<div>$row[1]</div>";
-        $div .= "<img src='$row[4]' />";
-        $div .= "<div>$row[2]</div>";
-        $div .= "</div>";
-        $div .= "<div class='desc'>";
-        $div .= $row[3];
-        $div .= "</div>";
-        $div .= "<div class='basket'>";
-        $div .= "<button>Add to basket</button>";
-        $div .= "</div>";
-        $div .= "</div>";
-        // printf ("%s (%s) %s %s\n", $row[0], $row[1], $row[2], $row[3]);
-    }
-    $div .= '</div>';
-}
+include 'header.php';
 ?>
-<html>
-    <head>
-        <title>Kukka kauppa</title>
-        <meta name="viewport" width="device-width, initial-scale=1.0">
-        <meta charset="utf-8">
-        <link rel="stylesheet" type="text/css" href="css/style.css">
-        <style></style> 
-    </head>
-    <body>
-        <header id="header">
-            <nav id="menu">
-                <li><a href="/index.php">Etusivu</a></li>
-                <li><a href="/tuotteet.php">Tuotteet</a></li>
-                <li><a href="/palaute.php">Palaute</a></li>
-                <li><a href="/ostoskori.php">Ostoskori</a></li>
-            </nav>
-        </header>
+<header>
+    <div class="total-hinta">
+        <div>Total hinta:</div>
+        <div id="totalHinta" style="margin-left: 5px;">0</div>
+        <div style="margin-left: 5px;">€</div>
+    </div>
+</header>
 
-        <main>
-            <form>
-                <?php
-                    if ($result = $mysqli->query($query)) {
-                        while ($row = $result->fetch_row()) {
-                            ?>
-                            <div class="flowers">
-                                <div>
-                                    <img src="<?=$row[4]?>" alt=""/>
-                                </div>
-                                <div class="details">
-                                    <div>Nimi: <?=$row[1]?></div>
-                                    <div>Desc: <?=$row[3]?></div>
-                                    <div>Price: <?=$row[2]?> €</div>
-                                </div>
-                                <div class="actions">
-                                    <input type="submit" value="Add to basket">
-                                </div>
+<main>
+    <form action="ostoskori.php" method="post">
+        <div class="addToBasket">
+            <input type="submit" name="addtobasket" value="Teidän ostoskorinne">
+        </div>
+        <?php
+            $query = "SELECT * FROM `kukat`;";
+            if ($result = $mysqli->query($query)) {
+                while ($row = $result->fetch_row()) {
+                    ?>
+                    <div class="flowers">
+                        <div>
+                            <img src="<?=$row[4]?>" alt=""/>
+                        </div>
+                        <div class="details">
+                            <div id="nimi_<?=$row[0]?>">Nimi: <?=$row[1]?></div>
+                            <div id="desc_<?=$row[0]?>">Desc: <?=$row[3]?></div>
+                            <div class="price">
+                                <div>Price: </div>
+                                <div id="price_<?=$row[0]?>"><?=$row[2]?></div>
+                                <div> €</div>
                             </div>
-                            <?php
-                        }
-                    }
-                ?>
-            </form>
-        </main>
-        
-        <footer></footer>
-    </body>
-</html>
+                            <div class="actions">
+                                <input onclick="setTotalHinta(this);" type="checkbox" name="kukat[]" value="<?=$row[0]?>">
+                                <span>
+                                    Add <?=$row[1]?> ostoskoriin
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <?php
+                }
+            }
+        ?>
+        <div class="addToBasket">
+            <input type="submit" name="addtobasket" value="Teidän ostoskorinne">
+        </div>
+    </form>
+</main>
+<?php
+include 'footer.php';
+?>
